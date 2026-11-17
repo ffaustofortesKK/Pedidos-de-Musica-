@@ -32,7 +32,7 @@ button.s{background:#222;color:#fff;border:1px solid #3a2430}
 <script>
 (function(){
 var $=function(i){return document.getElementById(i)},P=new URLSearchParams(location.hash.slice(1)),C=P.get('c'),K=P.get('k'),B=(P.get('n')||'https://ntfy.sh').replace(/\/+$/,''),me={},foto='',es=null,PK={name:'ECDH',namedCurve:'P-256'};
-$('est').textContent=P.get('e')||'FF-KARAOKE';
+$('est').textContent=P.get('e')||P.get('p')||'FF-KARAOKE';document.title=($('est').textContent)+' · Pedidos de música';
 var SK='ffkc_'+C;
 function getA(){try{return JSON.parse(localStorage.getItem(SK))}catch(e){return null}}
 function setA(a){try{a?localStorage.setItem(SK,JSON.stringify(a)):localStorage.removeItem(SK)}catch(e){}}

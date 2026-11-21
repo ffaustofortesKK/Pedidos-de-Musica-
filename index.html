@@ -34,12 +34,12 @@ button.s{background:#222;color:#fff;border:1px solid #3a2430}
 <label>Quer trocar a sua foto antes de enviar o pedido?</label>
 <div class="rd"><label><input type="radio" name="tf" value="s"> Sim</label><label><input type="radio" name="tf" value="n" checked> Não</label></div>
 <div id="fbox" style="display:none"><div class="frow"><button type="button" class="s" id="bF2" style="width:auto;margin:0;padding:10px 16px">📷 Tirar foto</button><img id="fp2" class="fp" alt=""></div></div>
-<button id="b2">Enviar pedido</button><button class="s" id="b3">Sair do perfil</button></section>
+<button id="b2">Enviar pedido</button><button class="s" id="b3">Sair do perfil</button><div style="font-size:11px;color:#8a7;margin-top:6px;text-align:center">Ao sair do perfil, a sua foto é retirada do ecrã.</div></section>
 <section id="s3"><div class="big" id="st"></div><div class="big" id="pos"></div><div id="dbg" style="text-align:center;font-size:11px;color:#8a7;margin-top:8px"></div><button class="s" id="b4">Anular pedido</button></section>
 </main>
 <input type="file" id="fIn" accept="image/*" capture="user" style="display:none">
 <div id="ed"><div class="edb"><h2>A sua foto</h2>
-<div><label class="o on" data-s="c"><span>Círculo (só a cabeça)</span><i></i></label><label class="o" data-s="m"><span>Boneca</span><i></i></label><label class="o" data-s="h"><span>Boneco</span><i></i></label></div>
+<div style="font-size:13px;color:#ddd;margin-bottom:4px">Círculo: só cabe a cabeça</div>
 <canvas id="cv" width="240" height="240"></canvas>
 <div class="sl">Zoom <input type="range" id="zm" min="100" max="300" value="100"></div>
 <div class="sl">Mover ↔ <input type="range" id="px" min="-100" max="100" value="0"></div>
@@ -69,20 +69,9 @@ function send(t,m){return fetch(B+'/'+t,{method:'POST',body:JSON.stringify(m)}).
 function readFoto(f,cb){var im=new Image(),u=URL.createObjectURL(f);im.onload=function(){var c=document.createElement('canvas');c.height=140;c.width=Math.max(1,Math.round(im.width*140/im.height));c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);cb(c.toDataURL('image/jpeg',.6))};im.src=u}
 /* ---------- Editor de foto: circulo / boneca / boneco ---------- */
 var pimg=null,psty='c',pcv=$('cv'),pcx=pcv.getContext('2d'),SK2=Math.PI*2;
-function corpo(f){
-  var pele='#f1c27d',cor=f?'#ff4f93':'#2f7bff',x=pcx;
-  if(f){x.fillStyle='#3b2314';x.beginPath();x.moveTo(38,112);x.quadraticCurveTo(38,10,120,10);x.quadraticCurveTo(202,10,202,112);x.lineTo(210,226);x.quadraticCurveTo(120,244,30,226);x.closePath();x.fill()}
-  x.fillStyle=pele;x.fillRect(104,150,32,44);
-  x.fillStyle=cor;x.beginPath();x.moveTo(36,320);x.quadraticCurveTo(40,198,120,184);x.quadraticCurveTo(200,198,204,320);x.closePath();x.fill();
-  x.strokeStyle=cor;x.lineWidth=26;x.lineCap='round';x.beginPath();x.moveTo(60,214);x.lineTo(36,290);x.moveTo(180,214);x.lineTo(204,290);x.stroke();
-  x.fillStyle=pele;x.beginPath();x.arc(35,299,13,0,SK2);x.fill();x.beginPath();x.arc(205,299,13,0,SK2);x.fill();
-  if(f){x.fillStyle='#ffd1e3';x.beginPath();x.moveTo(98,188);x.lineTo(120,226);x.lineTo(142,188);x.closePath();x.fill();x.fillStyle='#FFD400';x.beginPath();x.arc(120,244,7,0,SK2);x.fill()}
-  else{x.fillStyle='#fff';x.beginPath();x.moveTo(98,186);x.lineTo(120,216);x.lineTo(142,186);x.closePath();x.fill();x.fillStyle='#FFD400';x.beginPath();x.moveTo(113,214);x.lineTo(127,214);x.lineTo(132,282);x.lineTo(120,296);x.lineTo(108,282);x.closePath();x.fill()}
-}
 function pdraw(){
   var W=240,H=psty==='c'?240:320,hx=120,hy=psty==='c'?120:98,hr=psty==='c'?116:70,x=pcx;
   pcv.height=H;x.clearRect(0,0,W,H);
-  if(psty==='m')corpo(true);if(psty==='h')corpo(false);
   x.save();x.beginPath();x.arc(hx,hy,hr,0,SK2);x.clip();x.fillStyle='#333';x.fillRect(0,0,W,H);
   if(pimg){var s=Math.max(2*hr/pimg.width,2*hr/pimg.height)*($('zm').value/100),w=pimg.width*s,h=pimg.height*s;x.drawImage(pimg,hx-w/2+$('px').value*hr/100,hy-h/2+$('py').value*hr/100,w,h)}
   x.restore();x.lineWidth=5;x.strokeStyle='#fff';x.beginPath();x.arc(hx,hy,hr,0,SK2);x.stroke();
@@ -101,7 +90,6 @@ $('fIn').onchange=function(){
   im.onerror=function(){alert('Não foi possível abrir esta imagem. Tente outra foto.')};im.src=u;
 };
 ['zm','px','py'].forEach(function(i){$(i).oninput=pdraw});
-Array.prototype.forEach.call(document.querySelectorAll('[data-s]'),function(b){b.onclick=function(){psty=b.getAttribute('data-s');Array.prototype.forEach.call(document.querySelectorAll('[data-s]'),function(z){z.classList.toggle('on',z===b)});pdraw()}});
 $('edNo').onclick=function(){$('ed').style.display='none'};
 $('edOk').onclick=function(){foto=pfinal();$('ed').style.display='none';['fp1','fp2'].forEach(function(i){$(i).src=foto;$(i).style.display='inline-block'})};
 
@@ -138,10 +126,10 @@ $('b1').onclick=function(){
   aviso('');render();
 };
 document.querySelectorAll('[name=tf]').forEach(function(r){r.onchange=function(){$('fbox').style.display=this.value==='s'?'block':'none'}});
-$('b3').onclick=function(){me={};foto='';$('nome').value='';$('tel').value='';$('fp1').style.display=$('fp2').style.display='none';render()};
+$('b3').onclick=function(){var rs=me.rs||[],tl=me.tel;if(rs.length)enc({rs:rs,tel:tl}).then(function(e){return send(C,{t:'x',ek:e.ek,iv:e.iv,ct:e.ct})}).catch(function(){});me={};foto='';$('nome').value='';$('tel').value='';$('fp1').style.display=$('fp2').style.display='none';render()};
 $('b2').onclick=function(){
   var m=$('mus').value.trim();if(!m)return alert('Escreva a música que quer cantar.');
-  var id=rnd(12),r='r'+rnd(18),ch=Promise.resolve(),b=this,ref='';b.disabled=true;
+  var id=rnd(12),r='r'+rnd(18),ch=Promise.resolve(),b=this,ref='';me.rs=(me.rs||[]).concat([r]);b.disabled=true;
   if(foto){var f=foto;ch=enc({tel:me.tel,foto:f}).then(function(e){var n=Math.ceil(e.ct.length/2500),ps=[],i;for(i=0;i<n;i++)ps.push(send(C,{t:'f',id:id,ek:e.ek,iv:e.iv,n:n,i:i,d:e.ct.slice(i*2500,(i+1)*2500)}));return Promise.all(ps)}).then(function(){foto=''})}
   ch.then(function(){return enc({nome:me.nome,tel:me.tel,musica:m,r:r})}).then(function(e){return send(C,{t:'p',id:id,ek:e.ek,iv:e.iv,ct:e.ct})}).then(function(j){ref=j&&j.id?String(j.id).slice(0,6):'';
     $('mus').value='';setA({id:id,r:r,st:'wait',nome:me.nome});aviso('');sub();render();b.disabled=false;$('dbg').textContent='Entregue ao servidor às '+new Date().toLocaleTimeString('pt-PT')+(ref?' · ref. '+ref:'')
